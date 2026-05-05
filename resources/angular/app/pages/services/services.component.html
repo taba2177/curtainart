@@ -1,0 +1,16 @@
+<div class="page services-page" dir="rtl">
+  <div class="page-hero"><h1>خدماتنا</h1></div>
+  <section class="services-detail">
+    <div class="container">
+      <div class="services-detail__grid">
+        @for (post of posts(); track post.id) {
+          <div class="service-detail-card">
+            <div class="service-detail-card__icon">✦</div>
+            <h2>{{ getAr(post.title) }}</h2>
+            <p>{{ getAr(post.content) }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>

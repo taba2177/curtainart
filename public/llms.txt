@@ -1,0 +1,21 @@
+# CurtainsArt
+
+> 
+
+This site is built on the taba/crm Laravel package. Content is available via a REST API.
+
+## Key URLs
+
+- Homepage: http://localhost:8000/
+- Sitemap: http://localhost:8000/sitemap.xml
+- Posts API: http://localhost:8000/api/v1/posts
+- Categories API: http://localhost:8000/api/v1/categories
+
+## Content negotiation
+
+Individual post pages support `Accept: text/markdown` for plain Markdown responses.
+Example: GET http://localhost:8000/api/v1/posts/{slug} with Accept: text/markdown
+
+## Allowed bots
+
+All AI crawlers are permitted. See /robots.txt for details.

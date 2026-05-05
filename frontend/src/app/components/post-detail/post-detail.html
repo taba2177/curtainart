@@ -1,0 +1,419 @@
+@if (loading()) {
+  <div class="flex justify-center items-center min-h-screen bg-surface">
+    <div class="w-16 h-16 border-4 border-wood-200 border-t-accent animate-spin rounded-full"></div>
+  </div>
+} @else if (post()) {
+  <div dir="rtl" class="bg-surface min-h-screen pt-20">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- PRODUCT LAYOUT (slug=products, e.g. ستائر رول)    -->
+    <!-- ═══════════════════════════════════════════════ -->
+    @if (isProductLayout) {
+
+      <!-- Sticky breadcrumb strip -->
+      <div class="sticky top-[4.5rem] z-30 bg-surface/90 backdrop-blur-md border-b border-wood-200">
+        <div class="max-w-[100rem] mx-auto px-6 sm:px-8 py-4">
+          <nav class="flex items-center gap-3 text-xs sm:text-sm font-display text-wood-500">
+            <a routerLink="/" class="hover:text-accent transition-colors">الرئيسية</a>
+            <span class="text-wood-300">/</span>
+            @if (category()) {
+              <a [routerLink]="['/', category().slug]" class="hover:text-accent transition-colors">{{ t(category().name) }}</a>
+              <span class="text-wood-300">/</span>
+            }
+            <span class="text-wood-950 font-bold line-clamp-1">{{ t(post().title) }}</span>
+          </nav>
+        </div>
+      </div>
+
+      <!-- ── Hero: 2-column gallery + sticky info card ─────────────── -->
+      <section class="py-12 lg:py-16 bg-surface">
+        <div class="max-w-[100rem] mx-auto px-6 sm:px-8">
+          <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+
+            <!-- Gallery (right column in RTL = lg:col-span-7) -->
+            <div class="lg:col-span-7 lg:order-1" scrollReveal="fade-up">
+              <!-- Main viewer -->
+              <div class="relative aspect-square lg:aspect-[4/3] bg-wood-50 rounded-2xl overflow-hidden border border-wood-200 mb-4 group cursor-zoom-in"
+                   (click)="activeGalleryImage() && openLightbox(activeGalleryImage()!)">
+                @if (activeGalleryImage()) {
+                  <img [src]="activeGalleryImage()" [alt]="t(post().title)"
+                       class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div class="absolute top-4 right-4 w-10 h-10 bg-surface/90 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-5 h-5 text-wood-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                    </svg>
+                  </div>
+                }
+              </div>
+
+              <!-- Thumbnail strip -->
+              @if (productGallery().length > 1) {
+                <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-3">
+                  @for (src of productGallery(); track $index) {
+                    <button (click)="setActiveGalleryImage(src)"
+                            class="aspect-square overflow-hidden rounded-xl border-2 transition-all"
+                            [class.border-accent]="activeGalleryImage() === resolveImageUrl(src)"
+                            [class.border-wood-200]="activeGalleryImage() !== resolveImageUrl(src)"
+                            [class.hover:border-wood-400]="activeGalleryImage() !== resolveImageUrl(src)">
+                      <img [src]="resolveImageUrl(src)" [alt]="t(post().title) + ' ' + ($index + 1)"
+                           class="w-full h-full object-cover" loading="lazy" />
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Info / Sticky CTA (left column in RTL = lg:col-span-5) -->
+            <div class="lg:col-span-5 lg:order-2" scrollReveal="fade-up" [revealDelay]="100">
+              <div class="lg:sticky lg:top-32">
+                <!-- Category badge -->
+                @if (category()) {
+                  <a [routerLink]="['/', category().slug]"
+                     class="inline-flex items-center gap-2 text-xs font-display font-bold uppercase tracking-widest text-accent mb-5 hover:underline">
+                    <span class="w-2 h-2 bg-accent rounded-full"></span>
+                    {{ t(category().name) }}
+                  </a>
+                }
+
+                <h1 class="text-4xl lg:text-5xl xl:text-6xl font-display font-extrabold text-wood-950 leading-tight mb-4">
+                  {{ t(post().title) }}
+                </h1>
+
+                @if (productMeta()?.subtitle) {
+                  <p class="text-lg lg:text-xl text-accent font-display font-semibold mb-6">{{ productMeta()?.subtitle }}</p>
+                }
+
+                <p class="text-wood-700 text-base leading-loose mb-8">{{ t(post().content) }}</p>
+
+                <!-- Materials chips (quick-glance) -->
+                @if (productMeta()?.materials?.length) {
+                  <div class="mb-8">
+                    <div class="text-xs font-display font-bold uppercase tracking-widest text-wood-500 mb-3">الخامات المتوفرة</div>
+                    <div class="flex flex-wrap gap-2">
+                      @for (m of productMeta()?.materials; track m) {
+                        <span class="px-4 py-2 bg-wood-50 border border-wood-200 text-wood-800 font-display font-semibold text-sm rounded-full">{{ m }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Action buttons: WhatsApp / Phone / Book Visit -->
+                <div class="space-y-3">
+                  <a [href]="whatsappLink()" target="_blank" rel="noopener noreferrer"
+                     class="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-[#25D366] hover:bg-[#1eb455] text-surface rounded-xl font-display font-bold text-base transition-colors shadow-lg shadow-[#25D366]/20">
+                    <lucide-icon [img]="WhatsAppIcon" class="w-5 h-5"></lucide-icon>
+                    <span>اطلب عبر واتساب</span>
+                  </a>
+                  <div class="grid grid-cols-2 gap-3">
+                    @if (settings()?.crm_contact_phone) {
+                      <a [href]="'tel:' + settings().crm_contact_phone"
+                         class="inline-flex items-center justify-center gap-2 px-5 py-4 border border-wood-300 hover:border-accent hover:bg-accent hover:text-surface text-wood-950 rounded-xl font-display font-bold text-sm transition-all">
+                        <lucide-icon [img]="PhoneIcon" class="w-4 h-4"></lucide-icon>
+                        <span>اتصل الآن</span>
+                      </a>
+                    }
+                    <a routerLink="/contact"
+                       class="inline-flex items-center justify-center gap-2 px-5 py-4 bg-wood-950 hover:bg-accent text-surface rounded-xl font-display font-bold text-sm transition-colors">
+                      <lucide-icon [img]="CalendarIcon" class="w-4 h-4"></lucide-icon>
+                      <span>احجز زيارة</span>
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Trust quick-strip -->
+                <div class="mt-8 pt-6 border-t border-wood-200 grid grid-cols-2 gap-4 text-xs font-display">
+                  <div class="flex items-start gap-2">
+                    <lucide-icon [img]="ShieldCheckIcon" class="w-4 h-4 text-accent mt-0.5 flex-shrink-0"></lucide-icon>
+                    <span class="text-wood-700">ضمان شامل على المنتج والتركيب</span>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-accent mt-0.5 flex-shrink-0"></lucide-icon>
+                    <span class="text-wood-700">معاينة وقياس مجاني</span>
+                  </div>
+                </div>
+
+                <!-- BNPL payment options -->
+                <div class="mt-6 pt-5 border-t border-wood-200">
+                  <p class="text-xs font-display font-bold uppercase tracking-widest text-wood-400 mb-3">خيارات الدفع بالتقسيط</p>
+                  <div class="flex items-center gap-3">
+                    <!-- Tabby -->
+                    <div class="flex-1 flex items-center gap-2 px-4 py-3 bg-white border border-wood-200 rounded-xl shadow-sm">
+                      <svg viewBox="0 0 60 24" class="h-6 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="19" font-family="'Tajawal',sans-serif" font-size="16" font-weight="700" fill="#3D3D3D">tabby</text>
+                      </svg>
+                      <span class="text-xs text-wood-600 font-display">4 دفعات بدون فوائد</span>
+                    </div>
+                    <!-- Tamara -->
+                    <div class="flex-1 flex items-center gap-2 px-4 py-3 bg-white border border-wood-200 rounded-xl shadow-sm">
+                      <svg viewBox="0 0 72 24" class="h-6 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <text x="0" y="19" font-family="'Tajawal',sans-serif" font-size="16" font-weight="700" fill="#1A1A2E">tamara</text>
+                      </svg>
+                      <span class="text-xs text-wood-600 font-display">3 أقساط بدون فوائد</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Types section: 3-4 sub-type cards ────────────────────── -->
+      @if (productMeta()?.types?.length) {
+        <section class="py-20 lg:py-24 bg-wood-50 border-t border-wood-200">
+          <div class="max-w-[100rem] mx-auto px-6 sm:px-8">
+            <div class="text-center mb-14" scrollReveal="fade-up">
+              <div class="inline-flex items-center gap-3 mb-4">
+                <lucide-icon [img]="LayersIcon" class="w-5 h-5 text-accent"></lucide-icon>
+                <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">الأنواع المتوفرة</span>
+              </div>
+              <h2 class="text-3xl lg:text-4xl font-display font-extrabold text-wood-950">اختر النوع الذي يناسبك</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              @for (type of productMeta()?.types; track type.name; let i = $index) {
+                <div class="group bg-surface border border-wood-200 hover:border-accent rounded-2xl p-7 hover:shadow-xl transition-all duration-500"
+                     scrollReveal="fade-up" [revealDelay]="i * 80">
+                  <div class="text-3xl font-display font-extrabold text-accent/30 mb-3 group-hover:text-accent transition-colors">
+                    {{ ($index + 1) < 10 ? '0' + ($index + 1) : $index + 1 }}
+                  </div>
+                  <h3 class="text-lg font-display font-bold text-wood-950 mb-3 group-hover:text-accent transition-colors">{{ type.name }}</h3>
+                  <p class="text-sm text-wood-600 leading-relaxed">{{ type.description }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ── Specs section: components / how it works ─────────────── -->
+      @if (productMeta()?.specs?.length) {
+        <section class="py-20 lg:py-24 bg-surface">
+          <div class="max-w-[100rem] mx-auto px-6 sm:px-8">
+            <div class="text-center mb-14" scrollReveal="fade-up">
+              <div class="inline-flex items-center gap-3 mb-4">
+                <lucide-icon [img]="SettingsIcon" class="w-5 h-5 text-accent"></lucide-icon>
+                <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">المكونات والمواصفات</span>
+              </div>
+              <h2 class="text-3xl lg:text-4xl font-display font-extrabold text-wood-950">كيف تعمل الستارة</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
+              @for (spec of productMeta()?.specs; track spec.title; let i = $index) {
+                <div class="bg-wood-50 rounded-2xl p-8 hover:bg-accent hover:text-surface transition-all duration-500 group"
+                     scrollReveal="fade-up" [revealDelay]="i * 100">
+                  <div class="w-14 h-14 bg-accent/10 group-hover:bg-surface/20 rounded-xl flex items-center justify-center mb-5 transition-colors">
+                    <lucide-icon [img]="SettingsIcon" class="w-6 h-6 text-accent group-hover:text-surface transition-colors"></lucide-icon>
+                  </div>
+                  <h3 class="text-xl font-display font-bold text-wood-950 group-hover:text-surface mb-3 transition-colors">{{ spec.title }}</h3>
+                  <p class="text-sm text-wood-600 group-hover:text-surface/85 leading-relaxed transition-colors">{{ spec.description }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ── Features section: bullet list on accent band ─────────── -->
+      @if (productMeta()?.features?.length) {
+        <section class="py-16 lg:py-20 bg-accent text-surface">
+          <div class="max-w-5xl mx-auto px-6 sm:px-8">
+            <div class="text-center mb-10">
+              <div class="inline-flex items-center gap-3 mb-3">
+                <lucide-icon [img]="SparklesIcon" class="w-5 h-5"></lucide-icon>
+                <span class="uppercase tracking-[0.3em] font-display font-bold text-sm">لماذا منتجاتنا؟</span>
+              </div>
+              <h2 class="text-2xl lg:text-3xl font-display font-extrabold">المعايير التي نلتزم بها في كل ستارة</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              @for (feature of productMeta()?.features; track feature) {
+                <div class="flex items-center gap-3 bg-surface/10 backdrop-blur border border-surface/20 rounded-xl px-5 py-4">
+                  <lucide-icon [img]="CheckCircleIcon" class="w-5 h-5 flex-shrink-0"></lucide-icon>
+                  <span class="font-display font-semibold text-base">{{ feature }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ── Related products ─────────────────────────────────────── -->
+      @if (relatedPosts().length > 0) {
+        <section class="py-20 lg:py-24 bg-wood-50 border-t border-wood-200">
+          <div class="max-w-[100rem] mx-auto px-6 sm:px-8">
+            <div class="flex items-end justify-between mb-12 flex-wrap gap-4" scrollReveal="fade-up">
+              <h2 class="text-3xl lg:text-4xl font-display font-extrabold text-wood-950">أنواع ستائر أخرى</h2>
+              <a [routerLink]="['/', category().slug]"
+                 class="inline-flex items-center gap-2 text-accent font-display font-bold text-sm hover:underline">
+                <span>كل المنتجات</span>
+                <lucide-icon [img]="ArrowLeftIcon" class="w-4 h-4"></lucide-icon>
+              </a>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+              @for (rp of relatedPosts().slice(0, 4); track rp.id; let i = $index) {
+                <a [routerLink]="['/', category().slug, rp.slug]"
+                   class="group block bg-surface rounded-2xl overflow-hidden border border-wood-200 hover:border-accent hover:shadow-xl transition-all duration-500"
+                   scrollReveal="fade-up" [revealDelay]="i * 80">
+                  <div class="aspect-square overflow-hidden bg-wood-100">
+                    @if (getImage(rp)) {
+                      <img [src]="getImage(rp)" [alt]="t(rp.title)"
+                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" loading="lazy" />
+                    }
+                  </div>
+                  <div class="p-4">
+                    <h3 class="text-sm lg:text-base font-display font-bold text-wood-950 group-hover:text-accent transition-colors">{{ t(rp.title) }}</h3>
+                  </div>
+                </a>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ── Bottom booking CTA strip ─────────────────────────────── -->
+      <section class="py-16 lg:py-20 bg-wood-950 text-surface relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+          <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-accent/20 blur-3xl"></div>
+          <div class="absolute -bottom-32 -left-32 w-[36rem] h-[36rem] rounded-full bg-accent/10 blur-3xl"></div>
+        </div>
+        <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center relative z-10">
+          <h2 class="text-3xl lg:text-4xl font-display font-extrabold mb-4">احجز زيارة مجانية الآن</h2>
+          <p class="text-wood-300 text-base lg:text-lg leading-relaxed mb-8">
+            يجيك المختص بكاتلوجاتنا الفاخرة لاختيار {{ t(post().title) }} المناسبة لمساحتك بدون أي التزام.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a routerLink="/contact"
+               class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-accent hover:bg-accent-hover text-surface rounded-full font-display font-bold text-base transition-colors">
+              <lucide-icon [img]="CalendarIcon" class="w-5 h-5"></lucide-icon>
+              <span>احجز زيارة مجانية</span>
+            </a>
+            <a [href]="whatsappLink()" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center gap-2 px-8 py-4 border border-surface/30 hover:bg-surface/10 text-surface rounded-full font-display font-bold text-base transition-all">
+              <lucide-icon [img]="WhatsAppIcon" class="w-5 h-5"></lucide-icon>
+              <span>تواصل واتساب</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+    }
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- ARTICLE LAYOUT (about, services, partners…)     -->
+    <!-- ═══════════════════════════════════════════════ -->
+    @else if (isArticleLayout) {
+      <!-- Hero / Banner -->
+      <section class="relative bg-wood-950 text-surface py-32 bg-cover bg-center overflow-hidden">
+        @if (getImage(post())) {
+          <div class="absolute inset-0 z-0">
+            <img [src]="getImage(post())" alt="Banner" class="w-full h-full object-cover opacity-20 grayscale brightness-75 contrast-125 mix-blend-luminosity animate-scale-in" />
+            <div class="absolute inset-0 bg-gradient-to-t from-wood-950 via-wood-950/80 to-wood-950/50"></div>
+          </div>
+        }
+        <div class="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay z-0 pointer-events-none"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 text-center mt-10">
+          <nav class="mb-10 flex justify-center gap-4 text-xs font-semibold uppercase tracking-widest text-wood-400" scrollReveal="fade-down">
+            <a routerLink="/" class="hover:text-accent transition-colors">الرئيسية</a>
+            <span class="text-wood-600">/</span>
+            @if (category()) {
+              <a [routerLink]="['/', category().slug]" class="hover:text-accent transition-colors">{{ t(category().name) }}</a>
+              <span class="text-wood-600">/</span>
+            }
+            <span class="text-surface font-sans line-clamp-1">{{ t(post().title) }}</span>
+          </nav>
+          <h1 class="text-5xl md:text-7xl lg:text-[5rem] font-serif font-bold mb-8 text-surface leading-[1.1]" scrollReveal="fade-up">{{ t(post().title) }}</h1>
+        </div>
+      </section>
+
+      <section class="py-20 bg-surface relative">
+        <div class="max-w-4xl mx-auto px-6 sm:px-8">
+          @if (getImage(post())) {
+            <div class="relative -mt-20 mb-16 shadow-2xl border border-wood-200 overflow-hidden rounded-2xl" scrollReveal="fade-up">
+              <img [src]="getImage(post())" [alt]="t(post().title)" class="w-full aspect-[16/9] object-cover" />
+            </div>
+          }
+          <article class="prose prose-lg prose-wood max-w-none font-sans text-wood-800 leading-loose" scrollReveal="fade-up" [revealDelay]="100">
+            @if (post().content) {
+              <p class="text-2xl text-wood-700 font-serif leading-relaxed mb-12 border-r-4 border-accent pr-6">{{ t(post().content) }}</p>
+            }
+          </article>
+
+          <div class="mt-20 bg-wood-950 text-surface p-10 rounded-2xl relative overflow-hidden" scrollReveal="fade-up">
+            <div class="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay"></div>
+            <div class="relative z-10 text-center">
+              <h3 class="text-3xl font-serif font-bold mb-4 text-surface">احجز زيارة مجانية</h3>
+              <p class="text-wood-400 font-sans leading-relaxed mb-8 max-w-lg mx-auto">يجيك المختص بكاتلوجاتنا الفاخرة لاختيار الستارة المناسبة لمساحتك.</p>
+              <a routerLink="/contact" class="inline-block px-8 py-4 bg-accent hover:bg-accent-hover text-surface font-display font-bold uppercase tracking-widest text-sm rounded-full transition-all">تواصل معنا</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- GALLERY LAYOUT (slug=gallery, our-works…)       -->
+    <!-- ═══════════════════════════════════════════════ -->
+    @else if (isGalleryLayout) {
+      <section class="relative bg-wood-950 text-surface py-32 overflow-hidden">
+        @if (getImage(post())) {
+          <div class="absolute inset-0 z-0">
+            <img [src]="getImage(post())" alt="Banner" class="w-full h-full object-cover opacity-20" />
+            <div class="absolute inset-0 bg-gradient-to-t from-wood-950 via-wood-950/80 to-wood-950/50"></div>
+          </div>
+        }
+        <div class="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 text-center mt-10">
+          <h1 class="text-5xl md:text-7xl font-display font-extrabold mb-8 text-surface">{{ t(post().title) }}</h1>
+          <p class="text-wood-300 max-w-2xl mx-auto">{{ t(post().content) }}</p>
+        </div>
+      </section>
+
+      @if (post().images?.length > 0) {
+        <section class="py-24 bg-wood-50">
+          <div class="max-w-[100rem] mx-auto px-6 sm:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+              @for (img of post().images; track img.id; let i = $index) {
+                <div class="group relative overflow-hidden cursor-pointer rounded-xl border border-wood-200 hover:border-accent transition-all duration-500"
+                     scrollReveal="fade-up" [revealDelay]="i * 40" (click)="openLightbox(img.url)">
+                  <img [src]="img.url" [alt]="t(post().title) + ' ' + (i + 1)"
+                       class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" loading="lazy" />
+                  <div class="absolute inset-0 bg-wood-950/0 group-hover:bg-wood-950/40 transition-colors"></div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+    }
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- DEFAULT FALLBACK (any other category)            -->
+    <!-- ═══════════════════════════════════════════════ -->
+    @else {
+      <section class="py-32 bg-surface">
+        <div class="max-w-3xl mx-auto px-6 sm:px-8 text-center">
+          <h1 class="text-4xl lg:text-5xl font-display font-extrabold text-wood-950 mb-6">{{ t(post().title) }}</h1>
+          @if (post().content) {
+            <p class="text-wood-700 text-lg leading-loose">{{ t(post().content) }}</p>
+          }
+          <a routerLink="/" class="inline-flex items-center gap-2 mt-10 text-accent font-display font-bold hover:underline">
+            <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5"></lucide-icon>
+            <span>العودة للرئيسية</span>
+          </a>
+        </div>
+      </section>
+    }
+
+    <!-- Lightbox (shared) -->
+    @if (lightboxImage()) {
+      <div class="fixed inset-0 z-[9999] bg-wood-950/95 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm" (click)="closeLightbox()">
+        <button class="absolute top-6 left-6 w-12 h-12 bg-surface/10 hover:bg-surface/20 rounded-full flex items-center justify-center text-surface transition-colors z-10" (click)="closeLightbox()">
+          <lucide-icon [img]="XIcon" class="w-6 h-6"></lucide-icon>
+        </button>
+        <img [src]="lightboxImage()" alt="Image" class="max-h-[90vh] max-w-[90vw] object-contain shadow-2xl rounded-xl" (click)="$event.stopPropagation()" />
+      </div>
+    }
+  </div>
+}

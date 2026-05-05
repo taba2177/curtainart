@@ -1,0 +1,333 @@
+window.addEventListener("load", async function () {
+    if (!window.ContentTools) {
+        console.error("ContentTools library is not loaded.");
+        return;
+    }
+
+    try {
+        // Fetch all translations and initialize the editor
+        const allTranslations = await fetchAllTranslations();
+        const translationMap = await applyTranslations(allTranslations);
+
+        // Initialize ContentTools editor
+        const editor = ContentTools.EditorApp.get();
+        editor.init("[data-translation-key]", "data-translation-key");
+
+        // Listen for the 'saved' event
+        editor.addEventListener("saved", async (ev) => {
+            const regions = ev.detail().regions;
+            if (Object.keys(regions).length === 0) return;
+
+            const payload = {};
+
+            for (let key in regions) {
+                if (regions.hasOwnProperty(key)) {
+                    // Clean up the updated text: remove all leading/trailing whitespace and newlines
+                    const updatedText = cleanText(regions[key]);
+                    const realKey = translationMap.getRealKey(key); // Get the real key
+                    const originalText = translationMap.get(realKey);
+
+                    // Validate that both originalText and updatedText are non-empty strings
+                    if (
+                        typeof originalText === "string" &&
+                        cleanText(originalText) !== "" &&
+                        typeof updatedText === "string"
+                    ) {
+                        // If updatedText is empty after cleaning, set it to '0000'
+                        const newText =
+                            updatedText === "" ? "0000" : updatedText;
+
+                        if (
+                            originalText !== newText &&
+                            stripTags(newText).trim() !== ""
+                        ) {
+                            // Find the translation file name for the real key
+                            const translationFileName = findTranslationFileName(
+                                allTranslations,
+                                realKey
+                            );
+
+                            if (!translationFileName) {
+                                console.warn(
+                                    `Invalid translation key: ${realKey}`
+                                );
+                                continue;
+                            }
+
+                            // Remove the file name prefix from the real key
+                            const nestedKey = realKey
+                                .split(".")
+                                .slice(1)
+                                .join("."); // e.g., 'h1.h1_team_details'
+
+                            // Add the update to the payload
+                            if (!payload[translationFileName]) {
+                                payload[translationFileName] = {};
+                            }
+                            payload[translationFileName][nestedKey] = {
+                                old: originalText,
+                                new: stripTags(newText),
+                            };
+                            console.log(
+                                "new: stripTags(newText):",
+                                cleanText(JSON.stringify(payload, null, 2))
+                            );
+                        }
+                    } else {
+                        console.warn(
+                            `Invalid or empty text for key: ${realKey}`
+                        );
+                        console.warn(`Original Text: "${originalText}"`);
+                        console.warn(`Updated Text: "${updatedText}"`);
+                    }
+                }
+            }
+
+            if (Object.keys(payload).length === 0) {
+                console.error("No changes to save.");
+                return;
+            }
+
+            try {
+                const csrfToken = document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute("content");
+
+                // Log the payload before sending
+                console.log(
+                    "Payload before saving:",
+                    JSON.stringify(payload, null, 2)
+                );
+
+                // Send updates for each translation file
+                for (const translationFileName in payload) {
+                    const response = await fetch("/api/translations", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken,
+                        },
+                        body: JSON.stringify({
+                            translationFileName,
+                            updates: payload[translationFileName],
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        console.error("Save Error:", response.status);
+                        console.error(
+                            `Error saving content for file: ${translationFileName}. Check the console for details.`
+                        );
+                    } else {
+                        console.log(
+                            `Content saved successfully for file: ${translationFileName}!`
+                        );
+                        for (const key in payload[translationFileName]) {
+                            translationMap.set(
+                                key,
+                                payload[translationFileName][key].new
+                            ); // Update the local translation map
+                        }
+                    }
+                }
+
+                // Reload the page after saving
+                // location.reload();
+            } catch (error) {
+                console.error("Network Error:", error);
+                console.error("Network error. Please check your connection.");
+            }
+        });
+
+        // Helper function to clean text: remove all leading/trailing whitespace and newlines
+        function cleanText(text) {
+            return text.replace(/\n+/g, "\n"); //.replace(/^\s+|\s+$/g, "").replace(/\n/g, "");
+        }
+    } catch (error) {
+        console.error("Initialization error:", error);
+        console.error(
+            "Failed to initialize the page. Check the console for details."
+        );
+    }
+});
+
+/**
+ * Fetch all translations from the backend.
+ * @returns {Promise<Object>} - All translations grouped by file name.
+ */
+async function fetchAllTranslations() {
+    try {
+        const response = await fetch("/api/all-translations");
+        if (!response.ok) {
+            throw new Error(
+                `Failed to load translations. Status: ${response.status}`
+            );
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching translations:", error);
+        return {};
+    }
+}
+
+/**
+ * Apply translations to the DOM.
+ * @param {Object} allTranslations - All translations grouped by file name.
+ * @returns {TranslationMap} - The translation map.
+ */
+async function applyTranslations(allTranslations) {
+    const translationMap = new TranslationMap();
+
+    // Process all text nodes in the document
+    document.querySelectorAll("body *").forEach((element) => {
+        if (element.childNodes.length === 0) return; // Skip empty elements
+
+        // Extract text content, including <br> tags
+        const textContent = Array.from(element.childNodes)
+            .map((node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return node.textContent.trim();
+                } else if (node.nodeName === "BR") {
+                    return "\n"; // Replace <br> with newline
+                }
+                return "";
+            })
+            .filter((text) => text) // Remove empty strings
+            .join(" ");
+
+        if (!textContent) return; // Skip elements with no text
+
+        // Find the real key for this text
+        const realKey = findTranslationKey(
+            allTranslations,
+            textContent,
+            element
+        );
+        if (!realKey) {
+            console.warn(`No matching key found for content: "${textContent}"`);
+            return;
+        }
+
+        // Generate a unique key for the element
+        const dynamicKey = `key_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Set the data-translation-key attribute
+        element.setAttribute("data-translation-key", dynamicKey);
+
+        // Map the dynamic key to the real key and store the element's context
+        translationMap.setRealKey(dynamicKey, realKey);
+        translationMap.setElementContext(dynamicKey, {
+            tag: element.tagName.toLowerCase(),
+            text: textContent,
+        });
+
+        // Apply translations if available
+        const translationFileName = findTranslationFileName(
+            allTranslations,
+            realKey
+        );
+        const tag = element.tagName.toLowerCase();
+        if (
+            allTranslations[translationFileName] &&
+            allTranslations[translationFileName][tag] &&
+            allTranslations[translationFileName][tag][realKey]
+        ) {
+            element.innerHTML =
+                allTranslations[translationFileName][tag][realKey];
+            translationMap.set(
+                realKey,
+                allTranslations[translationFileName][tag][realKey]
+            );
+        } else {
+            translationMap.set(realKey, textContent);
+        }
+    });
+
+    return translationMap;
+}
+
+/**
+ * Find the translation key for a given text and element context.
+ * @param {Object} allTranslations - All translations grouped by file name.
+ * @param {string} text - The text to find.
+ * @param {HTMLElement} element - The element being edited.
+ * @returns {string|null} - The translation key or null if not found.
+ */
+function findTranslationKey(allTranslations, text, element) {
+    const tag = element.tagName.toLowerCase();
+
+    for (const file in allTranslations) {
+        if (allTranslations[file][tag]) {
+            for (const key in allTranslations[file][tag]) {
+                if (allTranslations[file][tag][key] === text) {
+                    return `${file}.${tag}.${key}`; // Return the full key (e.g., 'blogdetails3.h1.h1_team_details')
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Find the translation file name for a given translation key.
+ * @param {Object} allTranslations - All translations grouped by file name.
+ * @param {string} translationKey - The translation key (e.g., 'blogdetails3.h1.h1_team_details').
+ * @returns {string|null} - The translation file name (e.g., 'blogdetails3') or null if not found.
+ */
+function findTranslationFileName(allTranslations, translationKey) {
+    const parts = translationKey.split(".");
+    return parts[0] || null;
+}
+
+// Helper function to strip HTML tags
+function stripTags(html) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || div.innerText || "";
+}
+
+function disableAllLinks() {
+    // Select all <a> tags on the page
+    const links = document.querySelectorAll("a");
+
+    // Loop through each link and modify its behavior
+    links.forEach((link) => {
+        // Set href to javascript:void(0) to prevent scrolling
+        link.href = "javascript:void(0)";
+
+        // Add an event listener to prevent default behavior
+        link.addEventListener("click", (event) => {
+            event.preventDefault(); // Prevent the default link behavior
+        });
+    });
+
+    console.log("All links have been disabled.");
+}
+
+// Call the function to disable all links
+disableAllLinks();
+
+// Extend Map to store real keys and element context
+class TranslationMap extends Map {
+    constructor() {
+        super();
+        this.realKeys = new Map();
+        this.elementContexts = new Map();
+    }
+
+    setRealKey(dynamicKey, realKey) {
+        this.realKeys.set(dynamicKey, realKey);
+    }
+
+    getRealKey(dynamicKey) {
+        return this.realKeys.get(dynamicKey);
+    }
+
+    setElementContext(dynamicKey, context) {
+        this.elementContexts.set(dynamicKey, context);
+    }
+
+    getElementContext(dynamicKey) {
+        return this.elementContexts.get(dynamicKey);
+    }
+}

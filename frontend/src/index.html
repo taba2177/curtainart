@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Title is overridden at runtime by Angular's Title service from CRM site_name setting.
+       Bots receive a server-injected <title> via the InjectSeoForBots middleware. -->
+  <title>Site</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- CurtainsArt brand favicons. Source files live in frontend/public/ and
+       are copied to the build root by Angular's asset pipeline; serving them
+       from the site root means browsers don't have to wait for /storage/* to
+       be reachable. ?v= query strings burst the aggressive favicon cache. -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="/favicon.svg?v=2">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Alexandria:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-surface text-wood-900 font-sans antialiased selection:bg-accent selection:text-white">
+  <app-root></app-root>
+</body>
+</html>

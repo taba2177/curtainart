@@ -1,0 +1,27 @@
+<div class="page about-page" dir="rtl">
+  <div class="page-hero">
+    <h1>من نحن</h1>
+  </div>
+
+  <section class="about-content">
+    <div class="container">
+      @for (post of posts(); track post.id) {
+        <div class="about-block">
+          @if (getImage(post.images)) {
+            <img [src]="getImage(post.images)" [alt]="getAr(post.title)" loading="lazy" class="about-block__img" />
+          }
+          <div class="about-block__text">
+            <h2>{{ getAr(post.title) }}</h2>
+            <p>{{ getAr(post.content) }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="about-stats">
+    <div class="container">
+      <app-stats-counter [stats]="stats()" />
+    </div>
+  </section>
+</div>

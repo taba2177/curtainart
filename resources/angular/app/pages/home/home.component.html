@@ -1,0 +1,128 @@
+<div class="home" dir="rtl">
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="home__loading">
+      <div class="spinner"></div>
+    </div>
+  }
+
+  <!-- 1. Hero -->
+  @if (heroPost(); as hero) {
+    <section class="hero">
+      <div class="hero__bg" [style.background-image]="'url(/images/curtainsart/hero/hero-main.jpg)'"></div>
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <h1 class="hero__title">{{ getAr(hero.title) }}</h1>
+        <p class="hero__tagline">{{ getAr(hero.content) }}</p>
+        <div class="hero__ctas">
+          <a routerLink="/contact" class="btn btn--primary">احجز زيارة مجانية</a>
+          <a routerLink="/products" class="btn btn--outline">تصفح منتجاتنا</a>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- 2. Stats Counter -->
+  <section class="stats-section">
+    <app-stats-counter [stats]="stats()" />
+  </section>
+
+  <!-- 3. About Preview -->
+  @if (aboutPosts().length) {
+    <section class="about-preview">
+      <div class="about-preview__inner">
+        <div class="about-preview__text">
+          <h2>{{ getAr(aboutPosts()[0].title) }}</h2>
+          <p>{{ getAr(aboutPosts()[0].content) }}</p>
+          <a routerLink="/about" class="btn btn--primary">اعرف أكثر</a>
+        </div>
+        <div class="about-preview__image">
+          <img [src]="getImage(aboutPosts()[0].images)" alt="من نحن" loading="lazy" />
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- 4. Services -->
+  @if (servicePosts().length) {
+    <section class="services-section">
+      <h2 class="section-title">خدماتنا</h2>
+      <div class="services-grid">
+        @for (post of servicePosts(); track post.id) {
+          <div class="service-card">
+            <span class="service-card__icon">✦</span>
+            <h3>{{ getAr(post.title) }}</h3>
+            <p>{{ getAr(post.excerpt) }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- 5. Products Carousel (Swiper.js — vendored at resources/js/swiper.min.js) -->
+  @if (productPosts().length) {
+    <section class="products-section">
+      <h2 class="section-title">منتجاتنا</h2>
+      <div #productSwiper class="swiper products-swiper">
+        <div class="swiper-wrapper">
+          @for (post of productPosts(); track post.id) {
+            <div class="swiper-slide product-card">
+              <div class="product-card__img-wrap">
+                <img [src]="getImage(post.images)" [alt]="getAr(post.title)" loading="lazy" />
+              </div>
+              <h3>{{ getAr(post.title) }}</h3>
+              <p>{{ getAr(post.excerpt) }}</p>
+            </div>
+          }
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </section>
+  }
+
+  <!-- 6. Why Choose Us -->
+  <section class="why-us">
+    <h2 class="section-title section-title--light">لماذا تختار مصنع فن الستارة؟</h2>
+    <div class="why-us__grid">
+      <div class="why-card">
+        <span class="why-card__icon">★</span>
+        <h3>جودة عالية</h3>
+        <p>أفضل الخامات وأدق معايير الإنتاج</p>
+      </div>
+      <div class="why-card">
+        <span class="why-card__icon">﹩</span>
+        <h3>أسعار تنافسية</h3>
+        <p>أفضل جودة بأسعار مناسبة لجميع الميزانيات</p>
+      </div>
+      <div class="why-card">
+        <span class="why-card__icon">✓</span>
+        <h3>ضمان شامل</h3>
+        <p>ضمان على جميع منتجاتنا وخدماتنا</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Trust Strip -->
+  <section class="trust-strip">
+    <p class="trust-strip__heading">+47 جهة حكومية تثق بنا</p>
+    <div class="trust-strip__logos">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="trust-strip__placeholder"></div>
+      }
+    </div>
+  </section>
+
+  <!-- 8. Contact CTA -->
+  <section class="cta-section">
+    <h2>هل أنت مستعد لتحويل منزلك؟</h2>
+    <p>تواصل معنا الآن للحصول على استشارة مجانية وعرض سعر</p>
+    <div class="cta-section__buttons">
+      <a [href]="whatsappLink()" target="_blank" rel="noopener" class="btn btn--whatsapp">
+        تواصل عبر واتساب
+      </a>
+      <a routerLink="/contact" class="btn btn--outline-light">أرسل رسالة</a>
+    </div>
+  </section>
+</div>

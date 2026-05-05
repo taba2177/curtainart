@@ -1,0 +1,48 @@
+<nav class="navbar" dir="rtl">
+  <div class="navbar__inner">
+    <!-- Logo -->
+    <a routerLink="/" class="navbar__logo">
+      <img [src]="logoUrl()" alt="مصنع فن الستارة" height="48" />
+    </a>
+
+    <!-- Desktop links -->
+    <ul class="navbar__links">
+      @for (item of navItems(); track item.id) {
+        <li>
+          <a
+            [routerLink]="slugToPath(item.slug)"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.slug === 'homepage' }"
+            class="navbar__link"
+            (click)="closeMenu()"
+          >{{ getLabel(item.name) }}</a>
+        </li>
+      }
+    </ul>
+
+    <!-- CTA -->
+    <a href="https://wa.me/966554373327" target="_blank" rel="noopener" class="navbar__cta">
+      تواصل الآن
+    </a>
+
+    <!-- Hamburger -->
+    <button class="navbar__hamburger" (click)="toggleMenu()" aria-label="القائمة">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile drawer -->
+  @if (menuOpen()) {
+    <div class="navbar__drawer" dir="rtl">
+      @for (item of navItems(); track item.id) {
+        <a
+          [routerLink]="slugToPath(item.slug)"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.slug === 'homepage' }"
+          class="navbar__drawer-link"
+          (click)="closeMenu()"
+        >{{ getLabel(item.name) }}</a>
+      }
+    </div>
+  }
+</nav>

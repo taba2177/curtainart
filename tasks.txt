@@ -1,0 +1,15 @@
+Add TypeScript interfaces for all API response types in frontend/src/app/services/api.service.ts to replace the use of `any` types — create a types.ts file with interfaces matching actual API response shapes
+Add an Angular HTTP interceptor to handle global API errors with user-friendly fallback behavior in the frontend
+Add loading state signals (isLoading) to the home, category, and post-detail components and show a skeleton/spinner while data is fetching
+Add reactive form validation with proper error messages to the contact component using Angular Reactive Forms
+Fix N+1 query issues in backend/app/Http/Controllers/Api/HomeController.php by adding eager loading with `with()` on all relevant Eloquent queries
+Add lazy loading to Angular routes in frontend/src/app/app.routes.ts for category and post-detail components
+Extract shared Angular components for reusable UI elements: create a shared/card component and a shared/section-header component in frontend/src/app/components/shared/
+Add comprehensive API feature tests in backend/tests/Feature/ covering all endpoints in HomeController (home, navigation, categories, posts, contact)
+Add a global Angular error handler class in frontend/src/app/ that catches unhandled errors and logs them
+Optimize Angular build configuration in vite.config.js to enable bundle splitting and tree-shaking for production builds
+Add ARIA labels, roles, and keyboard navigation support to the header and footer components for WCAG 2.1 AA compliance
+Add a meta tags service in Angular to dynamically set page title and description per route for SEO
+Convert Blade homepage section files in resources/views/homepage/ to fully dynamic components that render different layouts based on post count (1 post → spotlight, 2 posts → 2-column, 3+ posts → grid)
+Add OpenAPI/Swagger documentation comments to all API routes and controllers in the backend
+Clean up old compiled assets in the public/ directory, keeping only the latest build artifacts

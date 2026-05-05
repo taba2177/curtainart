@@ -1,0 +1,735 @@
+<!--
+  STARTER TEMPLATE — taba/crm
+  This home component is a styled scaffold meant to be customised per project.
+  Brand-specific text (section headlines, feature card titles, marketing copy)
+  remains hardcoded inline in this file by design — replace those strings, the
+  imagery, and the section ordering to fit the host site. Dynamic data
+  (titles, descriptions, posts) is already bound to the CRM API/settings.
+-->
+@if (data()) {
+  <div class="overflow-x-hidden bg-surface text-wood-900 font-sans selection:bg-wood-900 selection:text-accent group/page">
+
+    @for (section of data()?.sections; track section.id) {
+      @switch (section.section_component) {
+
+        @case ('hero') {
+          <section class="relative min-h-[100vh] bg-wood-950 text-surface overflow-hidden">
+            <!-- Full background image -->
+            @if (section.posts && section.posts[0]) {
+              <div class="absolute inset-0 z-0">
+                <img [src]="section.posts[0].image?.url || '/storage/media/aaamal-aldykor_692b177c2b71a.jpg'" alt="Hero Image"
+                     class="w-full h-full object-cover select-none animate-scale-in" />
+                <div class="absolute inset-0 bg-wood-950/70"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-wood-950 via-transparent to-wood-950/40"></div>
+              </div>
+            }
+            <div class="absolute inset-0 z-[1] bg-noise opacity-[0.04] mix-blend-overlay pointer-events-none"></div>
+
+            <!-- Content -->
+            <div class="relative z-10 min-h-[100vh] flex flex-col">
+              <!-- Main hero content centered -->
+              <div class="flex-1 flex items-center">
+                <div class="w-full max-w-[100rem] mx-auto px-6 sm:px-12 pt-24">
+                  <div class="max-w-4xl mx-auto text-center">
+                    <div class="inline-flex items-center gap-4 mb-10">
+                      <span class="h-[1px] bg-accent/60 w-12"></span>
+                      <span class="text-accent/90 tracking-[0.35em] font-display font-bold text-xs sm:text-sm uppercase">{{ t(settings()?.crm_business_tagline) || 'فصل ستائرك على كيف كيفك' }}</span>
+                      <span class="h-[1px] bg-accent/60 w-12"></span>
+                    </div>
+
+                    @if (section.posts && section.posts[0]) {
+                      <h1 class="text-4xl sm:text-5xl lg:text-[4.5rem] font-display font-extrabold leading-[1.05] mb-8 text-surface">
+                        {{ t(section.posts[0].title) || (t(settings()?.crm_business_name) || 'مصنع فن الستارة') }}
+                      </h1>
+                      <p class="text-base lg:text-lg text-wood-300/90 leading-relaxed mb-14 font-sans font-light max-w-2xl mx-auto">
+                        {{ t(section.subtitle) || t(section.posts[0].content) || t(settings()?.crm_business_description) || '' }}
+                      </p>
+                    }
+
+                    <!-- Product-type pills (8 curtain types from upstream WP hero) -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-3xl mx-auto">
+                      @for (type of productTypes; track type) {
+                        <a [routerLink]="['/products']" class="px-4 py-2 text-xs sm:text-sm font-display text-surface/80 border border-surface/20 rounded-full hover:bg-accent hover:border-accent hover:text-surface transition-all duration-300">
+                          {{ type }}
+                        </a>
+                      }
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-5 items-center justify-center">
+                      <a routerLink="/contact" class="group relative px-10 py-5 bg-accent text-surface text-center overflow-hidden inline-flex justify-center items-center gap-3 rounded-full hover:shadow-[0_0_60px_rgba(0,116,179,0.5)] transition-all duration-500">
+                        <span class="relative z-10 font-display font-bold text-base tracking-wide">احجز زيارة مجانية</span>
+                        <lucide-icon [img]="ArrowLeftIcon" class="w-5 h-5 relative z-10 group-hover:-translate-x-2 transition-transform"></lucide-icon>
+                      </a>
+                      <a href="/storage/images/curtainsart/company-profile.pdf" target="_blank" rel="noopener"
+                         class="group inline-flex items-center gap-3 px-8 py-5 border border-surface/20 text-surface rounded-full hover:bg-surface/10 hover:border-surface/40 transition-all duration-300">
+                        <lucide-icon [img]="DownloadIcon" class="w-5 h-5"></lucide-icon>
+                        <span class="font-display font-bold text-base">بروفايل الشركة</span>
+                      </a>
+                      @if (settings().crm_contact_whatsapp) {
+                        <a [href]="'https://wa.me/' + settings().crm_contact_whatsapp" target="_blank" rel="noopener noreferrer"
+                           class="group inline-flex items-center gap-3 px-8 py-5 border border-surface/20 text-surface rounded-full hover:bg-surface/10 hover:border-surface/40 transition-all duration-300">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-[#25D366]"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                           <span class="font-display font-bold text-base">تواصل واتساب</span>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom stats bar — populated from crm_business_stats JSON. -->
+              <div class="w-full border-t border-surface/10">
+                @if (stats().length) {
+                  <div class="max-w-[100rem] mx-auto px-6 sm:px-12 py-6 flex flex-wrap justify-center lg:justify-between gap-8 lg:gap-0">
+                    @for (stat of stats(); track $index) {
+                      <div class="flex items-center gap-3 text-surface/60 text-sm font-display">
+                        <span class="text-2xl font-bold" [class.text-accent]="$last" [class.text-surface]="!$last">{{ stat.value }}</span>
+                        <span>{{ t(stat.label) }}</span>
+                      </div>
+                      @if (!$last) {
+                        <div class="w-px h-8 bg-surface/10 hidden lg:block"></div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('about') {
+          <section id="about" class="py-24 lg:py-36 bg-surface relative overflow-hidden">
+            <!-- architectural background lines -->
+            <div class="absolute inset-0 pointer-events-none grid grid-cols-4 gap-4 opacity-5">
+              <div class="border-r border-wood-950 h-full"></div>
+              <div class="border-r border-wood-950 h-full"></div>
+              <div class="border-r border-wood-950 h-full"></div>
+              <div class="border-r border-wood-950 h-full"></div>
+            </div>
+
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12 relative z-10">
+              <div class="grid lg:grid-cols-2 gap-20 lg:gap-32 items-center">
+                <div class="relative group" scrollReveal="fade-right">
+                  @if (section.posts && section.posts[0]) {
+                    <div class="aspect-[3/4] lg:aspect-square overflow-hidden bg-wood-200 relative">
+                      <img [src]="section.posts[0].image?.url || '/storage/media/6b2366bd-d39d-495d-8539-e382d057feae.jpeg'" alt="About Us"
+                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] ease-out mix-blend-multiply" />
+                      <div class="absolute inset-0 bg-wood-900 mix-blend-color opacity-20"></div>
+                    </div>
+                  }
+                  <!-- brutalist floating box — edit or remove this static block in your project -->
+                  @if (settings()?.crm_business_founded_year || settings()?.crm_contact_city) {
+                    <div class="absolute -bottom-12 lg:-bottom-24 -left-6 lg:-left-12 bg-accent text-surface p-10 lg:p-16 shadow-2xl">
+                      @if (settings()?.crm_business_founded_year) {
+                        <div class="text-[4rem] lg:text-[5.5rem] font-display font-bold leading-none mb-2 text-surface">{{ settings()?.crm_business_founded_year }}</div>
+                      }
+                      <div class="font-sans text-surface/80 uppercase tracking-[0.2em] text-xs font-semibold">
+                        {{ t(settings()?.crm_business_founded_label) || '' }}{{ t(settings()?.crm_contact_city) ? ' · ' + t(settings()?.crm_contact_city) : '' }}
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <div class="pt-12 lg:pt-0 pr-0 lg:pr-12" scrollReveal="fade-left" [revealDelay]="200">
+                  <div class="flex items-center gap-6 mb-10">
+                    <span class="text-accent uppercase tracking-[0.2em] font-display font-bold text-sm">{{ t(section.name) || 'عن الخدمة' }}</span>
+                     <span class="h-px bg-wood-300 flex-1"></span>
+                  </div>
+                  @if (section.posts && section.posts[0]) {
+                    <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-wood-950 mb-10 leading-[1.1]">
+                      {{ t(section.posts[0]?.title) || (t(section.subtitle) || '') }}
+                    </h2>
+                    <div class="text-base text-wood-600 font-sans leading-loose mb-14 text-justify">
+                      {{ t(section.posts[0]?.content) || (t(section.description) || '') }}
+                    </div>
+                  }
+
+                  <!-- Spaces served — taken from /about page on the live site:
+                       residential, commercial, government, hospitals. -->
+                  <div class="flex flex-wrap gap-3">
+                    @for (space of aboutSpaces; track space) {
+                      <span class="inline-flex items-center gap-2 px-5 py-3 border border-wood-200 hover:border-accent hover:bg-accent hover:text-surface text-wood-800 font-display font-semibold text-sm rounded-full transition-all duration-300">
+                        <lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-accent"></lucide-icon>
+                        {{ space }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('our-service') {
+          <section class="py-24 lg:py-36 bg-wood-950 text-surface border-t-8 border-accent">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-12 border-b border-wood-800 pb-16" scrollReveal="fade-up">
+                <div class="max-w-3xl">
+                  <div class="flex items-center gap-6 mb-8 transform rotate-1 origin-left">
+                    <span class="text-accent uppercase tracking-[0.4em] font-display font-bold text-sm">{{ t(section.name) || 'الخدمات' }}</span>
+                     <span class="h-px bg-wood-800 w-32"></span>
+                  </div>
+                  <h2 class="text-4xl lg:text-[4rem] font-display font-extrabold text-surface leading-[1]">حلول <br><span class="text-wood-500 font-serif italic">احترافية</span></h2>
+                </div>
+                @if (section.slug) {
+                  <a [routerLink]="['/', section.slug]" class="group flex items-center gap-4 text-wood-300 hover:text-accent font-display font-bold transition-colors uppercase tracking-widest text-lg">
+                    <span>عرض الكل</span>
+                    <div class="w-16 h-[2px] bg-wood-700 group-hover:bg-accent transition-colors"></div>
+                  </a>
+                }
+              </div>
+
+              <!-- Services content -->
+              @if (section.posts && section.posts.length > 0) {
+                <div class="text-base text-wood-300 font-sans leading-loose max-w-4xl">
+                  {{ t(section.posts[0].content) }}
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        @case ('our-projects') {
+          <section class="py-24 bg-wood-50 border-t-4 border-accent">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="flex items-center justify-between mb-20 pb-12 border-b border-wood-200" scrollReveal="fade-up">
+                <h2 class="text-3xl lg:text-5xl font-display font-black text-wood-950">{{ t(section.name) || 'أبرز الأعمال' }} <span class="text-accent italic font-serif">المختارة</span></h2>
+                @if (section.slug) {
+                  <a [routerLink]="['/', section.slug]" class="text-wood-600 hover:text-accent uppercase tracking-widest font-display font-bold text-sm transition-colors border border-wood-300 px-8 py-4 rounded-full hover:border-accent">
+                    تصفح الكل
+                  </a>
+                }
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @for (post of section.posts; track post.id; let i = $index) {
+                  <a [routerLink]="['/', section.slug, post.slug]" class="group block relative overflow-hidden bg-surface border border-wood-200 hover:border-accent hover:shadow-xl transition-all duration-500" scrollReveal="fade-up" [revealDelay]="i * 100">
+                    @if (post.image?.url) {
+                      <div class="aspect-[4/3] overflow-hidden">
+                        <img [src]="post.image.url" [alt]="t(post.title)" class="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
+                      </div>
+                    } @else {
+                      <div class="aspect-[4/3] bg-gradient-to-br from-wood-100 to-wood-200 flex items-center justify-center">
+                        <lucide-icon [img]="ShieldCheckIcon" class="w-12 h-12 text-wood-300"></lucide-icon>
+                      </div>
+                    }
+                    <div class="p-6">
+                      <h3 class="text-lg font-display font-bold text-wood-950 mb-3 group-hover:text-accent transition-colors">{{ t(post.title) }}</h3>
+                      <p class="text-wood-600 text-sm leading-relaxed line-clamp-2">{{ t(post.content) }}</p>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('our-works') {
+          <section class="py-24 lg:py-36 bg-wood-950 text-surface relative overflow-hidden">
+            <!-- Decorative background pattern -->
+            <div class="absolute inset-0 pointer-events-none opacity-[0.03]">
+              <div class="absolute top-0 left-0 w-96 h-96 border border-accent/20 rotate-45 -translate-x-1/2 -translate-y-1/2"></div>
+              <div class="absolute bottom-0 right-0 w-[40rem] h-[40rem] border border-accent/20 rotate-12 translate-x-1/4 translate-y-1/4"></div>
+            </div>
+            <div class="absolute inset-0 bg-noise opacity-[0.04] mix-blend-overlay pointer-events-none"></div>
+
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12 relative z-10">
+              <!-- Section header -->
+              <div class="text-center mb-20" scrollReveal="fade-up">
+                <div class="inline-flex items-center gap-4 mb-8">
+                  <span class="h-[1px] bg-accent/60 w-16"></span>
+                  <span class="text-accent tracking-[0.35em] font-display font-bold text-xs sm:text-sm uppercase">{{ t(section.name) || 'المعرض' }}</span>
+                  <span class="h-[1px] bg-accent/60 w-16"></span>
+                </div>
+                <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-surface leading-[1.1] mb-6">
+                  {{ t(section.name) || 'أعمالنا' }} <span class="text-accent italic font-serif">المميزة</span>
+                </h2>
+                <p class="text-wood-400 text-base max-w-2xl mx-auto font-sans leading-relaxed">
+                  استعرض نماذج أعمال مختارة توضح أسلوب التنفيذ والجودة في النتائج.
+                </p>
+              </div>
+
+              <!-- Swiper 3D Coverflow Gallery -->
+              @if (section.posts && section.posts[0]?.images?.length) {
+                <div class="relative" scrollReveal="zoom-in" [revealDelay]="200">
+                  <swiper-container id="works-swiper" init="false"
+                    class="works-swiper-container !overflow-visible !pb-16">
+                    @for (img of section.posts[0].images; track img.id; let i = $index) {
+                      <swiper-slide class="!w-[340px] sm:!w-[420px] lg:!w-[500px]">
+                        <div class="group relative overflow-hidden bg-wood-900/50 border border-wood-800/50 hover:border-accent/40 transition-all duration-700 shadow-2xl">
+                          <div class="overflow-hidden">
+                            <img [src]="img.url" [alt]="'مشروع ' + (i + 1)"
+                                 class="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-110" loading="lazy" />
+                          </div>
+                          <!-- Overlay gradient on hover -->
+                          <div class="absolute inset-0 bg-gradient-to-t from-wood-950/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                          <!-- Slide number badge -->
+                          <div class="absolute top-4 left-4 w-10 h-10 bg-accent/90 flex items-center justify-center text-surface font-display font-bold text-sm">
+                            {{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}
+                          </div>
+                        </div>
+                      </swiper-slide>
+                    }
+                  </swiper-container>
+
+                  <!-- Custom navigation arrows -->
+                  <div class="flex justify-center gap-4 mt-10">
+                    <button onclick="document.querySelector('#works-swiper')?.swiper?.slidePrev()"
+                      class="w-14 h-14 border border-wood-700 hover:border-accent flex items-center justify-center text-wood-400 hover:text-accent transition-all duration-300 hover:shadow-[0_0_20px_rgba(232,184,75,0.2)]">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <button onclick="document.querySelector('#works-swiper')?.swiper?.slideNext()"
+                      class="w-14 h-14 border border-wood-700 hover:border-accent flex items-center justify-center text-wood-400 hover:text-accent transition-all duration-300 hover:shadow-[0_0_20px_rgba(232,184,75,0.2)]">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- CTA under gallery -->
+              <div class="text-center mt-16" scrollReveal="fade-up" [revealDelay]="400">
+                @if (section.slug) {
+                  <a [routerLink]="['/', section.slug]"
+                    class="group inline-flex items-center gap-4 px-10 py-5 border-2 border-accent/50 hover:border-accent text-accent rounded-full hover:bg-accent hover:text-surface transition-all duration-500 font-display font-bold text-base tracking-wide">
+                    <span>تصفح جميع الأعمال</span>
+                    <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                  </a>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('four-cards') {
+          <section class="py-24 lg:py-32 bg-surface border-t border-wood-200">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="flex items-center gap-6 mb-16" scrollReveal="fade-up">
+                <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">{{ t(section.name) }}</span>
+                <span class="h-px bg-wood-300 flex-1"></span>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-8">
+                @for (post of section.posts; track post.id) {
+                  <a [routerLink]="['/', section.slug, post.slug]" class="group block bg-wood-50 border border-wood-200 hover:border-accent p-10 lg:p-14 transition-all duration-500 hover:shadow-xl" scrollReveal="fade-up" [revealDelay]="$index * 150">
+                    @if (post.image?.url) {
+                      <div class="aspect-video overflow-hidden mb-8 bg-wood-200">
+                        <img [src]="post.image.url" [alt]="t(post.title)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      </div>
+                    }
+                    <h3 class="text-2xl font-display font-bold text-wood-950 mb-4 group-hover:text-accent transition-colors">{{ t(post.title) }}</h3>
+                    <p class="text-wood-600 font-sans leading-relaxed line-clamp-3 text-sm">{{ t(post.content) }}</p>
+                  </a>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('service-benefit') {
+          <section class="py-20 bg-accent text-surface relative overflow-hidden">
+             <!-- Scrolling marquee text background -->
+             <div class="absolute inset-0 flex items-center whitespace-nowrap opacity-10 pointer-events-none overflow-hidden">
+                 <h2 class="text-[20rem] font-display font-black blur-sm">مصنع فن الستارة · مصنع فن الستارة · مصنع فن الستارة</h2>
+             </div>
+
+             <div class="max-w-[100rem] mx-auto px-6 sm:px-12 relative z-10">
+               <div class="flex items-center gap-6 mb-16" scrollReveal="fade-up">
+                 <span class="text-surface/80 uppercase tracking-[0.3em] font-display font-bold text-sm">{{ t(section.name) }}</span>
+                 <span class="h-px bg-surface/20 flex-1"></span>
+               </div>
+               <div class="grid md:grid-cols-2 gap-12">
+                 @for (post of section.posts; track post.id) {
+                   <div class="group border border-surface/20 p-10 lg:p-14 hover:bg-surface/10 transition-all">
+                     <h3 class="text-2xl lg:text-3xl font-display font-bold text-surface mb-6 group-hover:-translate-y-1 transition-transform">{{ t(post.title) }}</h3>
+                     <p class="text-surface/80 font-sans leading-relaxed text-base">{{ t(post.content) }}</p>
+                   </div>
+                 }
+               </div>
+               @if (!section.posts || section.posts.length === 0) {
+                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+                   <div class="text-center px-4 border-b lg:border-b-0 lg:border-l border-surface/20 pb-8 lg:pb-0"><h3 class="text-5xl font-display font-black mb-4">+100</h3><p class="text-surface/80 font-bold uppercase text-sm">مشروع منجز</p></div>
+                   <div class="text-center px-4 border-b lg:border-b-0 lg:border-l border-surface/20 pb-8 lg:pb-0"><h3 class="text-5xl font-display font-black mb-4">2018</h3><p class="text-surface/80 font-bold uppercase text-sm">سنة التأسيس</p></div>
+                   <div class="text-center px-4 border-b lg:border-b-0 lg:border-l border-surface/20 pb-8 lg:pb-0"><h3 class="text-5xl font-display font-black mb-4">100%</h3><p class="text-surface/80 font-bold uppercase text-sm">جودة فاخرة</p></div>
+                   <div class="text-center px-4"><h3 class="text-5xl font-display font-black mb-4">24/7</h3><p class="text-surface/80 font-bold uppercase text-sm">دعم واستشارة</p></div>
+                 </div>
+               }
+             </div>
+          </section>
+        }
+
+        @case ('why-choose-us') {
+          <section class="py-24 lg:py-36 bg-wood-50">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="flex flex-col lg:flex-row gap-24 items-start">
+                <div class="lg:w-1/3 sticky top-32" scrollReveal="fade-right">
+                  <h2 class="text-3xl lg:text-5xl font-display font-black text-wood-950 mb-10 leading-tight">لماذا<br/>نحن؟</h2>
+                  <p class="text-wood-600 leading-relaxed font-sans text-base mb-12 border-r-4 border-accent pr-6">
+                    نعتمد على نهج واضح في التنفيذ يجمع بين المرونة والجودة لتحقيق نتائج قابلة للقياس.
+                  </p>
+                </div>
+
+                <div class="lg:w-2/3 flex flex-col gap-8">
+                  @for (post of section.posts; track post.id; let i = $index) {
+                    <div class="bg-surface p-10 lg:p-14 border border-wood-200 hover:shadow-2xl hover:border-wood-400 transition-all duration-500 group flex flex-col md:flex-row gap-8 items-start" scrollReveal="fade-left" [revealDelay]="i * 150">
+                      <div class="text-5xl font-serif text-wood-300 group-hover:text-accent transition-colors italic">0{{ i + 1 }}</div>
+                      <div>
+                        <h3 class="text-2xl font-display font-bold text-wood-950 mb-5">
+                          {{ t(post.title) }}
+                        </h3>
+                        <p class="text-wood-600 text-base leading-relaxed">{{ t(post.content) }}</p>
+                      </div>
+                    </div>
+                  }
+                  @if (!section.posts || section.posts.length === 0) {
+                     <div class="bg-surface p-14 border border-wood-200 hover:border-wood-400 group flex flex-col md:flex-row gap-8 items-start">
+                      <div class="text-5xl font-serif text-wood-300">01</div>
+                      <div>
+                        <h3 class="text-2xl font-display font-bold text-wood-950 mb-5">خبرة متعددة القطاعات</h3>
+                        <p class="text-wood-600 text-base">ننفذ مشاريع متنوعة بمستوى ثابت من الجودة والالتزام بالمخرجات.</p>
+                      </div>
+                    </div>
+                    <div class="bg-surface p-14 border border-wood-200 hover:border-wood-400 group flex flex-col md:flex-row gap-8 items-start">
+                      <div class="text-5xl font-serif text-wood-300">02</div>
+                      <div>
+                        <h3 class="text-2xl font-display font-bold text-wood-950 mb-5">جودة تشغيل مستمرة</h3>
+                        <p class="text-wood-600 text-base">نطبّق معايير تنفيذ دقيقة تضمن تجربة مهنية واضحة من البداية للنهاية.</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('services-icons-grid') {
+          <!-- Icon-driven services grid (no random photos — each service is
+               an abstract concept like "warranty" or "pricing", so a curtain
+               photo would be misleading). Layout mirrors the service-card
+               pattern on monshaat.gov.sa / vision2030.gov.sa: numbered badge
+               + gradient icon tile + bold heading + 2-line description, with
+               a brand-blue underline that draws on hover. -->
+          <section class="py-24 lg:py-32 bg-gradient-to-b from-surface to-wood-50 border-t border-wood-200 relative overflow-hidden">
+            <!-- Subtle Saudi-inspired chevron field, top-right -->
+            <div class="absolute top-0 left-0 w-[28rem] h-[28rem] opacity-[0.05] pointer-events-none">
+              <svg viewBox="0 0 100 100" class="w-full h-full text-accent" fill="currentColor">
+                <pattern id="svc-pat" patternUnits="userSpaceOnUse" width="14" height="14">
+                  <path d="M0,7 L7,0 L14,7 L7,14 Z" fill="none" stroke="currentColor" stroke-width="0.5" />
+                </pattern>
+                <rect width="100" height="100" fill="url(#svc-pat)" />
+              </svg>
+            </div>
+
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12 relative z-10">
+              <!-- Header -->
+              <div class="text-center mb-16 lg:mb-20" scrollReveal="fade-up">
+                <div class="inline-flex items-center gap-3 mb-5 px-4 py-2 rounded-full bg-accent/10 border border-accent/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                  <span class="text-accent text-xs font-display font-bold uppercase tracking-widest">{{ t(section.name) || 'خدمات' }}</span>
+                </div>
+                <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-wood-950 leading-tight max-w-3xl mx-auto">
+                  {{ t(section.subtitle) || 'حلول احترافية متكاملة' }}
+                </h2>
+                @if (section.description) {
+                  <p class="text-wood-600 mt-5 max-w-2xl mx-auto leading-relaxed text-base lg:text-lg">{{ t(section.description) }}</p>
+                }
+              </div>
+
+              <!-- 3-col grid of icon-driven cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-7">
+                @for (post of section.posts; track post.id; let i = $index) {
+                  <div class="group relative bg-surface rounded-2xl border border-wood-200 hover:border-accent p-7 lg:p-8 hover:shadow-[0_24px_60px_-20px_rgba(0,116,179,0.25)] hover:-translate-y-1 transition-all duration-500"
+                       scrollReveal="fade-up" [revealDelay]="i * 70">
+
+                    <!-- Numbered badge (top-left in RTL) -->
+                    <div class="absolute top-5 left-5 text-xs font-display font-bold text-wood-300 group-hover:text-accent transition-colors tracking-wider">
+                      {{ (i + 1) < 10 ? '0' + (i + 1) : (i + 1) }}
+                    </div>
+
+                    <!-- Gradient icon tile -->
+                    <div class="w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center shadow-lg shadow-accent/25 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-500">
+                      <lucide-icon [img]="serviceIconFor(post)" class="w-7 h-7 text-surface"></lucide-icon>
+                    </div>
+
+                    <!-- Title + description -->
+                    <h3 class="text-xl lg:text-2xl font-display font-bold text-wood-950 mb-3 group-hover:text-accent transition-colors">{{ t(post.title) }}</h3>
+                    <p class="text-wood-600 text-sm lg:text-[15px] leading-relaxed">{{ t(post.content) }}</p>
+
+                    <!-- Brand-blue underline that draws on hover (KSA-gov detail) -->
+                    <div class="mt-6 h-[3px] w-10 bg-accent group-hover:w-20 transition-all duration-500 rounded-full"></div>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('product-types-grid') {
+          <!-- 8-card products grid — replaces 'our-projects' for actual
+               curtain products with hover overlay + descriptions. -->
+          <section class="py-24 lg:py-36 bg-wood-50 border-t border-wood-200">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8" scrollReveal="fade-up">
+                <div>
+                  <div class="inline-flex items-center gap-4 mb-6">
+                    <span class="h-[1px] bg-accent/60 w-10"></span>
+                    <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">{{ t(section.name) || 'المنتجات' }}</span>
+                  </div>
+                  <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-wood-950 leading-tight">
+                    {{ t(section.subtitle) || 'ارقى انواع الستائر' }}
+                  </h2>
+                </div>
+                @if (section.slug) {
+                  <a [routerLink]="['/', section.slug]"
+                     class="inline-flex items-center gap-3 self-start md:self-end px-6 py-3 border-2 border-wood-950 hover:bg-wood-950 hover:text-surface text-wood-950 font-display font-bold text-sm rounded-full transition-all">
+                    <span>مشاهدة جميع المنتجات</span>
+                    <lucide-icon [img]="ArrowLeftIcon" class="w-4 h-4"></lucide-icon>
+                  </a>
+                }
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @for (post of section.posts; track post.id; let i = $index) {
+                  <a [routerLink]="['/', section.slug, post.slug]"
+                     class="group block relative bg-surface rounded-2xl overflow-hidden border border-wood-200 hover:border-accent hover:shadow-2xl transition-all duration-500"
+                     scrollReveal="fade-up" [revealDelay]="i * 60">
+                    <div class="aspect-square overflow-hidden bg-wood-100">
+                      @if (post.image?.url) {
+                        <img [src]="post.image.url" [alt]="t(post.title)"
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" />
+                      }
+                      <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-wood-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                    <div class="p-5">
+                      <h3 class="text-base lg:text-lg font-display font-bold text-wood-950 mb-2 group-hover:text-accent transition-colors">{{ t(post.title) }}</h3>
+                      <p class="text-wood-600 text-xs leading-relaxed line-clamp-2">{{ t(post.content) }}</p>
+                      <div class="mt-4 inline-flex items-center gap-2 text-xs font-display font-bold text-accent">
+                        <span>اقرأ المزيد</span>
+                        <lucide-icon [img]="ArrowLeftIcon" class="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform"></lucide-icon>
+                      </div>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('trust-strip') {
+          <!-- KSA-gov-style trust signals: gradient brand-blue band with
+               glass-card stat tiles + sector-served cards. Borrows from
+               vision2030 / monshaat hero panels. -->
+          <section class="py-20 lg:py-28 bg-gradient-to-l from-accent via-accent-hover to-accent text-surface relative overflow-hidden">
+            <!-- Background pattern: layered Saudi-inspired chevrons -->
+            <div class="absolute inset-0 opacity-[0.08] pointer-events-none">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full text-surface" fill="currentColor">
+                <pattern id="ts-chev" patternUnits="userSpaceOnUse" width="20" height="20">
+                  <path d="M0,10 L10,0 L20,10 L10,20 Z" fill="none" stroke="currentColor" stroke-width="0.5" />
+                </pattern>
+                <rect width="100" height="100" fill="url(#ts-chev)" />
+              </svg>
+            </div>
+            <div class="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-surface/5 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-32 -right-32 w-[36rem] h-[36rem] rounded-full bg-surface/5 blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12 relative z-10">
+              <div class="text-center mb-14" scrollReveal="fade-up">
+                <div class="inline-flex items-center gap-3 mb-4 px-4 py-2 rounded-full bg-surface/10 backdrop-blur border border-surface/20">
+                  <span class="w-2 h-2 rounded-full bg-surface animate-pulse"></span>
+                  <span class="text-xs font-display font-bold uppercase tracking-widest">شراكاتنا</span>
+                </div>
+                <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-surface mb-4 leading-tight">
+                  {{ t(section.name) || 'موثوق بنا' }} <span class="opacity-70 font-light">من</span> الكبار
+                </h2>
+                <p class="text-surface/85 text-base lg:text-lg max-w-2xl mx-auto leading-relaxed">
+                  {{ t(section.description) || 'اكثر من 2000 شركة و 47 جهة حكومية تختارنا لتنفيذ مشاريع الستائر.' }}
+                </p>
+              </div>
+
+              <!-- Government-grade stat tiles: glass cards with icons -->
+              @if (stats().length) {
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-16 max-w-6xl mx-auto">
+                  @for (stat of stats(); track $index) {
+                    <div class="group relative bg-surface/10 backdrop-blur-md border border-surface/25 hover:bg-surface/15 hover:border-surface/40 rounded-2xl p-6 lg:p-8 transition-all duration-500 hover:-translate-y-1"
+                         scrollReveal="fade-up" [revealDelay]="$index * 80">
+                      <div class="absolute top-4 left-4 w-9 h-9 rounded-xl bg-surface/15 flex items-center justify-center">
+                        <lucide-icon [img]="ShieldCheckIcon" class="w-4 h-4 text-surface"></lucide-icon>
+                      </div>
+                      <div class="text-3xl lg:text-5xl font-display font-extrabold text-surface mb-2 mt-6">{{ stat.value }}</div>
+                      <div class="text-surface/85 text-sm font-display font-medium">{{ t(stat.label) }}</div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Client logo grid — each post.image is a real partner logo
+                   PNG with transparency. White cards make the logos legible
+                   against the brand-blue band; grayscale-by-default with a
+                   color-on-hover treatment is the standard "موثوق بنا" /
+                   trusted-by pattern on KSA gov & enterprise sites. -->
+              @if (section.posts && section.posts.length) {
+                <div class="bg-surface/95 backdrop-blur-md rounded-3xl p-6 lg:p-10 max-w-6xl mx-auto shadow-2xl border border-surface/40">
+                  <div class="text-center mb-6 lg:mb-8">
+                    <span class="inline-flex items-center gap-2 text-xs font-display font-bold text-wood-700 uppercase tracking-widest">
+                      <lucide-icon [img]="BuildingIcon" class="w-4 h-4 text-accent"></lucide-icon>
+                      <span>عملاؤنا المميزون</span>
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
+                    @for (post of section.posts; track post.id; let i = $index) {
+                      <div class="group aspect-[3/2] bg-surface rounded-xl border border-wood-200 hover:border-accent flex items-center justify-center p-4 lg:p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+                           scrollReveal="fade-up" [revealDelay]="i * 60"
+                           [title]="t(post.title)">
+                        @if (post.image?.url) {
+                          <img [src]="post.image.url" [alt]="t(post.title)"
+                               class="max-w-full max-h-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                               loading="lazy" />
+                        } @else {
+                          <span class="text-xs font-display font-bold text-wood-400 group-hover:text-accent transition-colors">{{ t(post.title) }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        @case ('testimonials') {
+          <!-- Customer testimonial cards. Note: source-of-truth WP site only
+               has thumbnail screenshots; quotes here are placeholders the
+               site owner can replace via the admin panel. -->
+          <section class="py-24 lg:py-32 bg-wood-50 border-t border-wood-200">
+            <div class="max-w-[100rem] mx-auto px-6 sm:px-12">
+              <div class="text-center mb-16" scrollReveal="fade-up">
+                <div class="inline-flex items-center gap-4 mb-6">
+                  <span class="h-[1px] bg-accent/60 w-10"></span>
+                  <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">{{ t(section.name) || 'العملاء المميزون' }}</span>
+                  <span class="h-[1px] bg-accent/60 w-10"></span>
+                </div>
+                <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-wood-950 leading-tight">
+                  ماذا يقول <span class="text-accent italic">عملاؤنا</span>؟
+                </h2>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @for (post of section.posts; track post.id; let i = $index) {
+                  <div class="bg-surface rounded-2xl p-7 border border-wood-200 hover:border-accent hover:shadow-xl transition-all duration-500 flex flex-col"
+                       scrollReveal="fade-up" [revealDelay]="i * 80">
+                    <lucide-icon [img]="QuoteIcon" class="w-8 h-8 text-accent/30 mb-4"></lucide-icon>
+                    <p class="text-wood-700 leading-relaxed text-sm mb-6 flex-grow">{{ t(post.content) }}</p>
+                    <div class="flex items-center gap-3 pt-4 border-t border-wood-200">
+                      <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent font-display font-bold text-sm">
+                        {{ (t(post.title) || '').charAt(0) }}
+                      </div>
+                      <div>
+                        <div class="font-display font-bold text-wood-950 text-sm">{{ t(post.title) }}</div>
+                        <div class="flex items-center gap-0.5 mt-0.5">
+                          @for (star of [1,2,3,4,5]; track star) {
+                            <lucide-icon [img]="StarIcon" class="w-3 h-3 text-accent fill-accent"></lucide-icon>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        @case ('booking-form') {
+          <!-- KSA-gov-style lead form: light panel on tinted background,
+               white field surfaces with brand-blue focus rings, big primary
+               CTA. Matches the inline service-request forms on monshaat /
+               vision2030 / sa.gov.sa. -->
+          <section class="relative py-24 lg:py-32 bg-gradient-to-br from-wood-50 via-surface to-accent/5 overflow-hidden border-t border-wood-200">
+            <!-- Subtle Saudi-inspired diamond pattern decoration -->
+            <div class="absolute top-12 right-12 w-48 h-48 opacity-[0.06] pointer-events-none">
+              <svg viewBox="0 0 100 100" class="w-full h-full text-accent" fill="currentColor">
+                <pattern id="bk-diamond" patternUnits="userSpaceOnUse" width="14" height="14">
+                  <path d="M7,0 L14,7 L7,14 L0,7 Z" fill="none" stroke="currentColor" stroke-width="0.5" />
+                </pattern>
+                <rect width="100" height="100" fill="url(#bk-diamond)" />
+              </svg>
+            </div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-accent/10 blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto px-6 sm:px-12 relative z-10">
+              <div class="text-center mb-12" scrollReveal="fade-up">
+                <div class="inline-flex items-center gap-4 mb-6">
+                  <span class="h-[1px] bg-accent w-10"></span>
+                  <span class="text-accent uppercase tracking-[0.3em] font-display font-bold text-sm">{{ t(section.name) || 'احجز زيارة' }}</span>
+                  <span class="h-[1px] bg-accent w-10"></span>
+                </div>
+                @if (section.posts && section.posts[0]) {
+                  <h2 class="text-3xl lg:text-5xl font-display font-extrabold text-wood-950 mb-4 leading-tight">
+                    {{ t(section.posts[0].title) || 'احجز زيارة مجانية' }}
+                  </h2>
+                  <p class="text-wood-600 text-base lg:text-lg max-w-2xl mx-auto leading-relaxed">
+                    {{ t(section.posts[0].content) || t(section.description) }}
+                  </p>
+                }
+              </div>
+
+              <!-- White card with strong shadow — KSA gov form aesthetic -->
+              <form (ngSubmit)="submitBooking($event)"
+                    class="bg-surface rounded-3xl p-7 lg:p-12 shadow-[0_30px_80px_-30px_rgba(0,116,179,0.25)] border border-wood-200">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                  <label class="block">
+                    <span class="block text-xs font-display font-bold text-wood-800 mb-2 uppercase tracking-wider">الاسم</span>
+                    <input type="text" name="name" [(ngModel)]="bookingName" required placeholder="الاسم الكامل"
+                           class="w-full bg-wood-50 border-2 border-wood-200 focus:border-accent focus:bg-surface focus:ring-4 focus:ring-accent/15 outline-none rounded-xl px-5 py-4 text-wood-950 placeholder:text-wood-400 font-sans transition-all" />
+                  </label>
+                  <label class="block">
+                    <span class="block text-xs font-display font-bold text-wood-800 mb-2 uppercase tracking-wider">رقم الهاتف</span>
+                    <input type="tel" name="phone" [(ngModel)]="bookingPhone" required placeholder="05xxxxxxxx" dir="ltr"
+                           class="w-full bg-wood-50 border-2 border-wood-200 focus:border-accent focus:bg-surface focus:ring-4 focus:ring-accent/15 outline-none rounded-xl px-5 py-4 text-wood-950 placeholder:text-wood-400 font-sans transition-all text-right" />
+                  </label>
+                  <label class="block">
+                    <span class="block text-xs font-display font-bold text-wood-800 mb-2 uppercase tracking-wider">الحي</span>
+                    <input type="text" name="district" [(ngModel)]="bookingDistrict" required placeholder="مثال: حي اشبيلية"
+                           class="w-full bg-wood-50 border-2 border-wood-200 focus:border-accent focus:bg-surface focus:ring-4 focus:ring-accent/15 outline-none rounded-xl px-5 py-4 text-wood-950 placeholder:text-wood-400 font-sans transition-all" />
+                  </label>
+                </div>
+
+                <button type="submit" [disabled]="bookingSubmitting()"
+                        class="w-full group inline-flex items-center justify-center gap-3 px-8 py-5 bg-gradient-to-l from-accent to-accent-hover hover:to-accent text-surface rounded-xl font-display font-bold text-base tracking-wide shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/40 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                  <lucide-icon [img]="SendIcon" class="w-5 h-5 group-hover:-translate-x-1 transition-transform"></lucide-icon>
+                  <span>{{ bookingSubmitting() ? 'جاري الإرسال...' : 'ارسال المندوب مجاناً' }}</span>
+                </button>
+
+                @if (bookingSuccess()) {
+                  <div class="mt-5 p-4 bg-accent/5 border border-accent/30 rounded-xl text-center">
+                    <p class="text-sm text-accent font-display font-semibold">✓ تم استلام طلبك — يجيك المختص قريبًا.</p>
+                  </div>
+                }
+                @if (bookingError()) {
+                  <div class="mt-5 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
+                    <p class="text-sm text-red-600 font-display font-semibold">{{ bookingError() }}</p>
+                  </div>
+                }
+
+                <!-- Trust mini-row under the form -->
+                <div class="mt-8 pt-6 border-t border-wood-200 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-display text-wood-600">
+                  <div class="flex items-center justify-center gap-2"><lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-accent"></lucide-icon><span>زيارة وقياس مجاني</span></div>
+                  <div class="flex items-center justify-center gap-2"><lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-accent"></lucide-icon><span>كاتلوجات فاخرة</span></div>
+                  <div class="flex items-center justify-center gap-2"><lucide-icon [img]="CheckCircleIcon" class="w-4 h-4 text-accent"></lucide-icon><span>بدون أي التزام</span></div>
+                </div>
+              </form>
+            </div>
+          </section>
+        }
+
+      }
+    }
+  </div>
+} @else {
+  <div class="flex justify-center items-center h-screen bg-surface">
+    <div class="text-center">
+      <div class="w-16 h-16 border-4 border-wood-300 border-t-accent rounded-full animate-spin mx-auto mb-6"></div>
+      <p class="text-wood-500 font-display tracking-widest uppercase text-sm">Loading...</p>
+    </div>
+  </div>
+}

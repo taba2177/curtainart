@@ -1,0 +1,26 @@
+<div class="page products-page" dir="rtl">
+  <div class="page-hero"><h1>منتجاتنا</h1></div>
+  <section class="products-carousel-section">
+    <div class="container">
+      <!-- Swiper carousel — vendored swiper.min.js, initialised in ProductsComponent.initSwiper() -->
+      <div #productSwiper class="swiper products-page-swiper">
+        <div class="swiper-wrapper">
+          @for (post of posts(); track post.id) {
+            <div class="swiper-slide product-detail-card">
+              <div class="product-detail-card__img">
+                <img [src]="getImage(post.images)" [alt]="getAr(post.title)" loading="lazy" />
+              </div>
+              <div class="product-detail-card__body">
+                <h3>{{ getAr(post.title) }}</h3>
+                <p>{{ getAr(post.content) }}</p>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  </section>
+</div>

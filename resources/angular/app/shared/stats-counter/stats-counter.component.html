@@ -1,0 +1,8 @@
+<div class="stats-grid" dir="rtl">
+  @for (stat of stats(); track $index) {
+    <div class="stat-card">
+      <span class="stat-value">{{ displayed()[$index] }}{{ stat.suffix }}</span>
+      <span class="stat-label">{{ stat.label }}</span>
+    </div>
+  }
+</div>
