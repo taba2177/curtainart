@@ -35,7 +35,7 @@ Thumbs.db
 /public/*.css.map
 /public/3rdpartylicenses.txt
 /public/app.html
-/public/build/
+# /public/build/
 
 # Backup frontend (not deployable, never touch)
 /frontend2/

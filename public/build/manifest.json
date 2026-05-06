@@ -1,0 +1,93 @@
+{
+  "_stats-counter.component-C6My9UmI.js": {
+    "file": "assets/stats-counter.component-C6My9UmI.js",
+    "name": "stats-counter.component",
+    "imports": [
+      "resources/angular/main.ts"
+    ]
+  },
+  "resources/angular/app/pages/about/about.component.ts": {
+    "file": "assets/about.component-3kRmq_hr.js",
+    "name": "about.component",
+    "src": "resources/angular/app/pages/about/about.component.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/angular/main.ts",
+      "_stats-counter.component-C6My9UmI.js"
+    ]
+  },
+  "resources/angular/app/pages/contact/contact.component.ts": {
+    "file": "assets/contact.component-DaMTFQa-.js",
+    "name": "contact.component",
+    "src": "resources/angular/app/pages/contact/contact.component.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/angular/main.ts"
+    ]
+  },
+  "resources/angular/app/pages/home/home.component.ts": {
+    "file": "assets/home.component-5YLESVFZ.js",
+    "name": "home.component",
+    "src": "resources/angular/app/pages/home/home.component.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/angular/main.ts",
+      "_stats-counter.component-C6My9UmI.js"
+    ]
+  },
+  "resources/angular/app/pages/products/products.component.ts": {
+    "file": "assets/products.component-WCom9ykK.js",
+    "name": "products.component",
+    "src": "resources/angular/app/pages/products/products.component.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/angular/main.ts"
+    ]
+  },
+  "resources/angular/app/pages/services/services.component.ts": {
+    "file": "assets/services.component-rE_-18iY.js",
+    "name": "services.component",
+    "src": "resources/angular/app/pages/services/services.component.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/angular/main.ts"
+    ]
+  },
+  "resources/angular/main.ts": {
+    "file": "assets/main-CV8gYigs.js",
+    "name": "main",
+    "src": "resources/angular/main.ts",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/angular/app/pages/home/home.component.ts",
+      "resources/angular/app/pages/about/about.component.ts",
+      "resources/angular/app/pages/services/services.component.ts",
+      "resources/angular/app/pages/products/products.component.ts",
+      "resources/angular/app/pages/contact/contact.component.ts"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-7j_yKtHr.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BJeQ3Tq0.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "vendor/taba/crm/src/resources/css/admin.css": {
+    "file": "assets/admin-MwLBAJFZ.css",
+    "src": "vendor/taba/crm/src/resources/css/admin.css",
+    "isEntry": true,
+    "name": "admin",
+    "names": [
+      "admin.css"
+    ]
+  }
+}
