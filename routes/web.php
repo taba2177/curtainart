@@ -30,9 +30,11 @@ $serveAngular = function () {
     return response($html, 200, ['Content-Type' => 'text/html']);
 };
 
-Route::get('/', $serveAngular)->name('angular.home');
-Route::get('/contact', $serveAngular)->name('angular.contact');
-// Also map the generic paths BUT only if they don't match admin or api
-Route::get('/{slug}', $serveAngular)->where('slug', '^(?!api|admin|livewire|filament|storage|_|lang).*$')->name('angular.category');
-Route::get('/{category}/{post}', $serveAngular)->where('category', '^(?!api|admin|livewire|filament|storage|_|lang).*$')->name('angular.post');
+Route::middleware('crm.seo')->group(function () use ($serveAngular) {
+    Route::get('/', $serveAngular)->name('angular.home');
+    Route::get('/contact', $serveAngular)->name('angular.contact');
+    // Also map the generic paths BUT only if they don't match admin or api
+    Route::get('/{slug}', $serveAngular)->where('slug', '^(?!api|admin|livewire|filament|storage|_|lang).*$')->name('angular.category');
+    Route::get('/{category}/{post}', $serveAngular)->where('category', '^(?!api|admin|livewire|filament|storage|_|lang).*$')->name('angular.post');
+});
 
