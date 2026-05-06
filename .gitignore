@@ -23,7 +23,7 @@ Homestead.yaml
 Thumbs.db
 
 # Curator / user-uploaded media (seeded by ImageDownloadSeeder)
-/public/images/
+# /public/images/
 # /storage/app/public/images/
 /storage/screenshots/
 
