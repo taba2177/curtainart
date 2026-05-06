@@ -100,11 +100,20 @@ class ImageDownloadSeeder extends Seeder
         $skipped = 0;
         $failed = 0;
 
-        // Step 1: download files
+        // Step 1: copy from local public_html (Downloads) or fall back to HTTP
         foreach (self::IMAGES as $relativePath => $url) {
             $dest = $baseDir . '/' . $relativePath;
             if (File::exists($dest) && File::size($dest) > 0) { $skipped++; continue; }
             File::ensureDirectoryExists(dirname($dest));
+
+            $local = $this->localSourcePath($url);
+            if ($local !== null) {
+                File::copy($local, $dest);
+                $downloaded++;
+                continue;
+            }
+
+            // HTTP fallback (e.g. when running outside the dev machine)
             $contents = @file_get_contents($url, false, stream_context_create([
                 'http' => ['timeout' => 30, 'header' => "User-Agent: CurtainsArtImageSeeder/1.0\r\n"],
             ]));
@@ -181,6 +190,25 @@ class ImageDownloadSeeder extends Seeder
             '✅ ImageDownloadSeeder: %d downloaded, %d already-present, %d failed; %d media rows; %d posts re-linked.',
             $downloaded, $skipped, $failed, count($pathToId), $rewritten
         ));
+    }
+
+    /**
+     * Resolve a WP upload URL to a local file path inside the Downloads/public_html
+     * folder (dev machine copy of the upstream site). Returns null when not found.
+     */
+    private function localSourcePath(string $url): ?string
+    {
+        $userProfile = getenv('USERPROFILE') ?: getenv('HOME');
+        if (!$userProfile) return null;
+
+        $urlPath = parse_url($url, PHP_URL_PATH);     // /wp-content/uploads/2024/06/Artboard-1.svg
+        $decoded = urldecode($urlPath);               // decode %D9%... → Arabic chars
+        $local   = rtrim($userProfile, '/\\')
+                 . DIRECTORY_SEPARATOR . 'Downloads'
+                 . DIRECTORY_SEPARATOR . 'public_html'
+                 . str_replace('/', DIRECTORY_SEPARATOR, $decoded);
+
+        return File::exists($local) ? $local : null;
     }
 
     /**

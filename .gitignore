@@ -24,7 +24,7 @@ Thumbs.db
 
 # Curator / user-uploaded media (seeded by ImageDownloadSeeder)
 /public/images/
-/storage/app/public/images/
+# /storage/app/public/images/
 /storage/screenshots/
 
 # Angular build output — source maps and license file only (bundles/html are committed so git pull deploys them)
