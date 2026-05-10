@@ -11,8 +11,9 @@ Route::get('/user', function (Request $request) {
 Route::get('/ping', function () { return ['status' => 'ok']; });
 
 Route::prefix('v1')->group(function () {
-    Route::get('/home',              [HomeController::class, 'index']);
-    Route::get('/navigation',        [HomeController::class, 'navigation']);
-    Route::get('/categories/{slug}', [HomeController::class, 'category']);
-    Route::post('/contact',          [HomeController::class, 'contact']);
+    Route::get('/home',                          [HomeController::class, 'index']);
+    Route::get('/navigation',                    [HomeController::class, 'navigation']);
+    Route::get('/categories/{slug}',             [HomeController::class, 'category']);
+    Route::get('/categories/{category}/{post}',  [HomeController::class, 'post']);
+    Route::post('/contact',                      [HomeController::class, 'contact']);
 });
