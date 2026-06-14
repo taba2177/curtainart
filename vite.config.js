@@ -8,7 +8,7 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
-                "vendor/taba/crm/src/resources/css/admin.css",
+                "resources/css/admin.css",
                 "resources/angular/main.ts",
             ],
             refresh: true,

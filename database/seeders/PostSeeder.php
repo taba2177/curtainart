@@ -23,21 +23,9 @@ class PostSeeder extends Seeder
         // Ensure every row has a user_id — posts.user_id is NOT NULL.
         // Default to the first user (super admin seeded just before this seeder).
         $defaultUserId = DB::table('users')->value('id') ?? 1;
-
-        // Normalize optional columns so every row carries the same key set —
-        // DB::table()->insert() does a single batched query that requires
-        // uniform columns across all rows. `metadata` only exists on product
-        // posts; backfill it as null elsewhere. Keep this list in sync with
-        // any optional column added to seeders/data/posts.php.
-        $optionalColumns = ['metadata', 'meta_title', 'meta_description', 'image_id'];
         foreach ($posts as &$row) {
             if (! array_key_exists('user_id', $row) || $row['user_id'] === null) {
                 $row['user_id'] = $defaultUserId;
-            }
-            foreach ($optionalColumns as $col) {
-                if (! array_key_exists($col, $row)) {
-                    $row[$col] = null;
-                }
             }
         }
         unset($row);
