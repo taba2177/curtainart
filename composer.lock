@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be12db153fc261021fb33d317f2153b0",
+    "content-hash": "7468179984092ccf82076c02b278241e",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -16783,7 +16783,33 @@
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "8.3"
+        "php": "8.3",
+        "ext-ctype": "8.3",
+        "ext-curl": "8.3",
+        "ext-date": "8.3",
+        "ext-dom": "8.3",
+        "ext-exif": "8.3",
+        "ext-fileinfo": "8.3",
+        "ext-filter": "8.3",
+        "ext-gd": "8.3",
+        "ext-hash": "8.3",
+        "ext-iconv": "8.3",
+        "ext-intl": "8.3",
+        "ext-json": "8.3",
+        "ext-libxml": "8.3",
+        "ext-mbstring": "8.3",
+        "ext-openssl": "8.3",
+        "ext-pcre": "8.3",
+        "ext-pdo": "8.3",
+        "ext-phar": "8.3",
+        "ext-reflection": "8.3",
+        "ext-session": "8.3",
+        "ext-simplexml": "8.3",
+        "ext-tokenizer": "8.3",
+        "ext-xml": "8.3",
+        "ext-xmlreader": "8.3",
+        "ext-xmlwriter": "8.3",
+        "ext-zip": "8.3"
     },
     "plugin-api-version": "2.6.0"
 }
