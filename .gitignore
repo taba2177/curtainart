@@ -46,6 +46,6 @@ docs/superpowers/
 .specs
 .specify
 .github
-
+composer.lock
 # Angular prerender / ng artifacts are now committed
 
