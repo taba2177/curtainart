@@ -42,10 +42,8 @@
     },
     "scripts": {
         "setup": [
-            "composer update",
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php artisan key:generate",
-            "@php artisan migrate --force"
+            "composer update"
+
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
