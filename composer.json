@@ -13,7 +13,6 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "nesbot/carbon": "~3.11.0",
         "taba/crm": "*"
     },
     "require-dev": {
@@ -87,35 +86,6 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "platform": {
-            "php": "8.2",
-            "ext-ctype": "8.2",
-            "ext-curl": "8.2",
-            "ext-date": "8.2",
-            "ext-dom": "8.2",
-            "ext-exif": "8.2",
-            "ext-fileinfo": "8.2",
-            "ext-filter": "8.2",
-            "ext-gd": "8.2",
-            "ext-hash": "8.2",
-            "ext-iconv": "8.2",
-            "ext-intl": "8.2",
-            "ext-json": "8.2",
-            "ext-libxml": "8.2",
-            "ext-mbstring": "8.2",
-            "ext-openssl": "8.2",
-            "ext-pcre": "8.2",
-            "ext-pdo": "8.2",
-            "ext-phar": "8.2",
-            "ext-reflection": "8.2",
-            "ext-session": "8.2",
-            "ext-simplexml": "8.2",
-            "ext-tokenizer": "8.2",
-            "ext-xml": "8.2",
-            "ext-xmlreader": "8.2",
-            "ext-xmlwriter": "8.2",
-            "ext-zip": "8.2"
-        },
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
